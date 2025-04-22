@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search | Autosphere</title>
+  <link rel="stylesheet" href="static/css/home.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body class="dashboard-body">
+
+  <div class="dashboard-container">
+
+    <aside class="sidebar">
+      <div class="logo">
+        <img src="static/css/logo.png" alt="Logo" />
+        <h2>AUTOSPHERE</h2>
+      </div>
+      <nav>
+        <a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
+        <a href="#"><i class="fas fa-car"></i> Recommendations</a>
+        <a href="{{ url_for('search') }}"><i class="fa-solid fa-magnifying-glass"></i> Search</a>
+        <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a> 
+        <a href="{{ url_for('contact') }}"><i class="fas fa-phone"></i> Contact Us</a>
+        <a href="{{ url_for('about') }}"><i class="fa-solid fa-star" style="color: #ffffff;"></i> About Us</a>
+        <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </aside>
+
+    <main class="dashboard-main">
+      <header>
+        <h1>Search for Your Dream Car</h1>
+        <p>Find the perfect car that matches your style and budget</p>
+      </header>
+
+      <section class="card">
+        <form action="#" method="get" style="display: flex; flex-direction: column; gap: 15px; max-width: 600px;">
+          <input type="text" name="search" placeholder="Search by model, type, etc." required style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;" />
+
+          <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <select name="brand" style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+              <option value="">Brand</option>
+              <option value="Hyundai">Hyundai</option>
+              <option value="Mercedes">Mercedes</option>
+              <option value="Lamborghini">Lamborghini</option>
+              <option value="Koenigsegg">Koenigsegg</option>
+            </select>
+
+            <select name="fuel" style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+              <option value="">Fuel Type</option>
+              <option value="Petrol">Petrol</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Electric">Electric</option>
+            </select>
+
+            <select name="price" style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+              <option value="">Price Range</option>
+              <option value="0-500000">Below ₹5 Lakhs</option>
+              <option value="500000-1000000">₹5-10 Lakhs</option>
+              <option value="1000000-5000000">₹10-50 Lakhs</option>
+              <option value="5000000+">₹50 Lakhs+</option>
+            </select>
+          </div>
+
+          <button type="submit" style="padding: 10px 15px; background-color: #0056cc; color: white; border: none; border-radius: 5px; cursor: pointer;">Search</button>
+        </form>
+      </section>
+
+      <section class="card" style="margin-top: 30px;">
+        <h2>Search Results</h2>
+        <p>No results yet. Please search to see matching cars.</p>
+        <!-- Later: Populate this section dynamically using JS or Flask -->
+      </section>
+    </main>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body, html {
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .hero {
+    background: url('bg.png') no-repeat center center/cover;
+    height: 100vh;
+    position: relative;
+  }
+  
+  .overlay {
+    background-color: rgba(0, 0, 0, 0.4);
+    height: 100%;
+    width: 100%;
+    color: white;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  header .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #d4e3f4;
+  }
+  
+  .logo img {
+    width: 32px;
+    height: 32px;
+  }
+  
+  main {
+    max-width: 600px;
+    margin-top: auto;
+  }
+  
+  main h1 {
+    font-size: 3.5rem;
+    line-height: 1.2;
+  }
+  
+  main h1 span {
+    color: #ccc;
+    font-weight: 400;
+  }
+  
+  main h1 strong {
+    color: #0056cc;
+  }
+  
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    background-color: #0056cc;
+    color: white;
+    padding: 15px 25px;
+    font-weight: bold;
+    border-radius: 25px;
+    margin-top: 30px;
+    text-decoration: none;
+    transition: 0.3s ease;
+  }
+  
+  .btn .arrow {
+    margin-left: 10px;
+    font-size: 1.2rem;
+  }
+  
+  .btn:hover {
+    background-color: #003d99;
+  }
+  

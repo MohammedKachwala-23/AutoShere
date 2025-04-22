@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Us | Autosphere</title>
+  <link rel="stylesheet" href="static/css/contact.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body class="contact-body">
+
+  
+  <aside class="sidebar">
+    <div class="logo">
+      <img src="static/css/logo.png" alt="Logo" />
+      <h2>AUTOSPHERE</h2>
+    </div>
+    <nav>
+      <a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
+        <a href="#"><i class="fas fa-car"></i> Recommendations</a>
+        <a href="{{ url_for('search') }}"><i class="fa-solid fa-magnifying-glass"></i> Search</a>
+        <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a> 
+        <a href="{{ url_for('contact') }}"><i class="fas fa-phone"></i> Contact Us</a>
+        <a href="{{ url_for('about') }}"><i class="fa-solid fa-star" style="color: #ffffff;"></i> About Us</a>
+        <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+  </aside>
+
+  
+  <div class="contact-main">
+
+    
+    <header class="contact-header">
+      <div class="logo">
+        <img src="static/css/logo.png" alt="Autosphere Logo" />
+        <span>AUTOSPHERE</span>
+      </div>
+    </header>
+
+    <h1>Contact Us</h1>
+
+    <div class="contact-info">
+      <div class="info-box">
+        <i class="fas fa-phone-alt"></i>
+        <p><strong>Phone:</strong> +91 52236 32352</p>
+      </div>
+
+      <div class="info-box">
+        <i class="fas fa-envelope"></i>
+        <p><strong>Email:</strong> hello@autosphere.in</p>
+      </div>
+
+      <div class="info-box">
+        <i class="fas fa-map-marker-alt"></i>
+        <p>
+          <strong>Address:</strong> <br>
+          163 Hill View Street,<br>
+          Lavasa, Maharashtra<br>
+          India 
+        </p>
+      </div>
+
+      <div class="info-box social">
+        <p><strong>Follow us: @autosphere</strong></p>
+        <a href="#"><i class="fab fa-instagram fa-xl"></i></a>
+        <a href="#"><i class="fab fa-facebook fa-xl"></i></a>
+        
+        
+       
+      </div>
+    </div>
+
+  </div> 
+
+</body>
+</html>

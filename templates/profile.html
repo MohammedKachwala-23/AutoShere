@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile | Autosphere</title>
+  <link rel="stylesheet" href="static/css/profile.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    
+    <aside class="sidebar">
+      <div>
+        <div class="logo">
+          <img src="static/css/logo.png" alt="Autosphere Logo" />
+          <h2>AUTOSPHERE</h2>
+        </div>
+        <nav>
+          <a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
+        <a href="#"><i class="fas fa-car"></i> Recommendations</a>
+        <a href="{{ url_for('search') }}"><i class="fa-solid fa-magnifying-glass"></i> Search</a>
+        <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a> 
+        <a href="{{ url_for('contact') }}"><i class="fas fa-phone"></i> Contact Us</a>
+        <a href="{{ url_for('about') }}"><i class="fa-solid fa-star" style="color: #ffffff;"></i> About Us</a>
+        <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="dashboard-main">
+        <header>
+          <h1>Welcome, {{ user.username }}!</h1>
+          <p>Here's your profile information:</p>
+        </header>
+  
+        <section class="dashboard-cards">
+          <div class="card">
+            <h3>Email</h3>
+            <p>{{ user.email }}</p>
+          </div>
+          <div class="card">
+            <h3>Preferences</h3>
+            <p>{{ user.preferences or 'Not specified' }}</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+/* Base styles */
+body.about-body, html {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9; /* Match Contact Us */
+  color: #222;
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background-color: #001f3f;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  min-height: 100vh;
+}
+
+.sidebar .logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.sidebar .logo img {
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+.sidebar nav a {
+  color: white;
+  text-decoration: none;
+  margin: 15px 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar nav a:hover {
+  background: #004080;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+/* Main content area */
+.about-main {
+  flex-grow: 1;
+  padding: 50px 20px;
+  background-color: #f9f9f9;
+  overflow-y: auto;
+  max-width: 100%;
+}
+
+/* Header */
+.about-header {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 20px 40px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 30px;
+}
+
+.about-header .logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #0056cc;
+}
+
+.about-header .logo img {
+  height: 40px;
+  margin-right: 10px;
+}
+
+/* Main heading */
+.about-main h1 {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #0056cc;
+  margin-bottom: 40px;
+}
+
+/* Content cards / sections */
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.about-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.about-box h2 {
+  color: #0056cc;
+  margin-bottom: 10px;
+}
+
+.about-box p {
+  color: #444;
+  line-height: 1.6;
+}
