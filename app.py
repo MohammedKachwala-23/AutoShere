@@ -72,9 +72,7 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/')
-def home():
-    return render_template('home.html')
+
 
 
 # You can define other routes like /profile, /contact, etc.
@@ -127,6 +125,46 @@ def about():
 @app.route('/search')
 def search():
     return render_template('search.html')
+
+
+
+@app.route('/home', methods=['GET', 'POST'])
+def home():
+    if request.method == 'POST':
+        # Get financial form data
+        income = int(request.form['income'])
+        expenditure = int(request.form['expenditure'])
+        down_payment = int(request.form['down_payment'])
+        loan_tenure = int(request.form['loan_tenure'])
+        buffer = int(request.form['buffer'])
+
+        # Get logged-in user's email
+        user_email = session.get('email')
+
+        print("Logged in user:", user_email)  # For debugging
+
+        if user_email:
+            with driver.session() as session_db:
+                session_db.run("""
+                    MERGE (p:Person {email: $email})
+                    SET p.income = $income,
+                        p.expenditure = $expenditure,
+                        p.down_payment = $down_payment,
+                        p.loan_tenure = $loan_tenure,
+                        p.buffer = $buffer
+                """,
+                email=user_email,
+                income=income,
+                expenditure=expenditure,
+                down_payment=down_payment,
+                loan_tenure=loan_tenure,
+                buffer=buffer)
+
+            return redirect('/home')
+        else:
+            return "User not logged in", 401
+
+    return render_template('home.html')
 
 # === RUN ===
 

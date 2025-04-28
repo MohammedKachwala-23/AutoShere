@@ -26,14 +26,21 @@
   <section class="card">
     <h2>Enter Your Financial Details</h2>
     <form action="#" method="post" style="display: flex; flex-direction: column; gap: 15px; max-width: 400px;">
+      
       <label for="income">Monthly Income:</label>
       <input type="number" id="income" name="income" placeholder="e.g., 50000" required />
 
       <label for="expenditure">Monthly Expenditure:</label>
       <input type="number" id="expenditure" name="expenditure" placeholder="e.g., 25000" required />
 
-      <label for="savings">Monthly Savings:</label>
-      <input type="number" id="savings" name="savings" placeholder="e.g., 10000" required />
+      <label for="down_payment">Down Payment:</label>
+      <input type="number" id="down_payment" name="down_payment" placeholder="e.g., 200000" required />
+
+      <label for="loan_tenure">Loan Tenure (in Years):</label>
+      <input type="number" id="loan_tenure" name="loan_tenure" placeholder="e.g., 3" min="1" required />
+
+      <label for="buffer">Buffer Amount:</label>
+      <input type="number" id="buffer" name="buffer" placeholder="e.g., 5000" required />
 
       <button type="submit" style="padding: 10px 15px; background-color: #0056cc; color: white; border: none; border-radius: 5px; cursor: pointer;">Submit</button>
     </form>
