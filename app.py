@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from werkzeug.security import generate_password_hash, check_password_hash
 from neo4j import GraphDatabase
 
-
 app = Flask(__name__)
 app.secret_key = "super_secret_key"  # Use env vars in production
 
@@ -32,8 +31,9 @@ def signup():
                 flash("Email already registered. Try logging in.", "error")
                 return redirect(url_for('signup'))
 
+            # Admin flag is False by default
             session_neo.run("""
-                CREATE (u:User {username: $username, email: $email, password: $password})
+                CREATE (u:User {username: $username, email: $email, password: $password, is_admin: false})
             """, username=username, email=email, password=hashed_password)
 
         flash("Signup successful! Please log in.", "success")
@@ -50,13 +50,15 @@ def login():
 
         with driver.session() as session_neo:
             result = session_neo.run("""
-                MATCH (u:User {email: $email}) RETURN u.password AS password, u.username AS username
+                MATCH (u:User {email: $email})
+                RETURN u.password AS password, u.username AS username, u.is_admin AS is_admin
             """, email=email)
             record = result.single()
 
             if record and check_password_hash(record["password"], raw_password):
                 session['email'] = email 
                 session['user'] = record["username"]
+                session['is_admin'] = record["is_admin"]
                 flash("Login successful!", "success")
                 return redirect(url_for('home'))
             else:
@@ -65,20 +67,32 @@ def login():
     return render_template('login.html')
 
 
+
+@app.route('/admin_login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        uname = request.form['username']
+        pwd = request.form['password']
+        if uname in admins and admins[uname] == pwd:
+            session['admin'] = uname
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Invalid admin credentials')
+    return render_template('admin_login.html')
+
+@app.route('/admin_dashboard')
+def admin_dashboard():
+    if 'admin' in session:
+        return f"Welcome, {session['admin']}! (Admin Dashboard)"
+    return redirect(url_for('admin_login'))
+
+
 @app.route('/logout')
 def logout():
     session.clear()
     flash("Logged out successfully", "info")
     return redirect(url_for('login'))
 
-
-
-
-
-# You can define other routes like /profile, /contact, etc.
-# as shown before.
-
-# === ROUTES ===
 
 @app.route('/')
 def index():
@@ -127,21 +141,16 @@ def search():
     return render_template('search.html')
 
 
-
 @app.route('/home', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
-        # Get financial form data
         income = int(request.form['income'])
         expenditure = int(request.form['expenditure'])
         down_payment = int(request.form['down_payment'])
         loan_tenure = int(request.form['loan_tenure'])
         buffer = int(request.form['buffer'])
 
-        # Get logged-in user's email
         user_email = session.get('email')
-
-        print("Logged in user:", user_email)  # For debugging
 
         if user_email:
             with driver.session() as session_db:
@@ -166,7 +175,15 @@ def home():
 
     return render_template('home.html')
 
-# === RUN ===
+
+# === Admin-only route ===
+@app.route('/admin')
+def admin():
+    if not session.get('is_admin'):
+        flash("Unauthorized access.", "error")
+        return redirect(url_for('home'))
+    return render_template('admin.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

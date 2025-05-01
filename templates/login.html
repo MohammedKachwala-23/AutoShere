@@ -24,6 +24,7 @@
       <input type="email" name="email" placeholder="Email" required />
       <input type="password" name="password" placeholder="Password" required />
       <button type="submit">Login</button>
+      <a href="{{ url_for('admin_login') }}">Admin Login</a>
       <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a></p>
     </form>
   </div>

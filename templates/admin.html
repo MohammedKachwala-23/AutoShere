@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel | Autosphere</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+<div class="dashboard-container">
+  <aside class="sidebar">
+    <div>
+      <div class="logo">
+        <img src="{{ url_for('static', filename='css/logo.png') }}" alt="Autosphere Logo" />
+        <h2>AUTOSPHERE</h2>
+      </div>
+      <nav>
+        <a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
+        <a href="{{ url_for('search') }}"><i class="fa-solid fa-magnifying-glass"></i> Search</a>
+        <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a>
+        <a href="{{ url_for('admin') }}" class="active"><i class="fas fa-cogs"></i> Admin</a>
+        <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </div>
+  </aside>
+
+  <main class="dashboard-main">
+    <header>
+      <h1>Admin Panel</h1>
+      <p>Add a new car to the collection.</p>
+    </header>
+
+    <section class="admin-form">
+      <form action="{{ url_for('add_car') }}" method="POST">
+        <label for="name">Car Name:</label>
+        <input type="text" name="name" id="name" required>
+
+        <label for="brand">Brand:</label>
+        <input type="text" name="brand" id="brand" required>
+
+        <label for="type">Type:</label>
+        <input type="text" name="type" id="type" required>
+
+        <label for="image_url">Image URL:</label>
+        <input type="url" name="image_url" id="image_url" required>
+
+        <button type="submit">Add Car</button>
+      </form>
+    </section>
+  </main>
+</div>
+
+</body>
+</html>

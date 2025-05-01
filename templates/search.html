@@ -22,8 +22,10 @@
         <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a> 
         <a href="{{ url_for('contact') }}"><i class="fas fa-phone"></i> Contact Us</a>
         <a href="{{ url_for('about') }}"><i class="fa-solid fa-star" style="color: #ffffff;"></i> About Us</a>
+        <a href="{{ url_for('admin') }}"><i class="fas fa-user-shield"></i> Admin</a>
         <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
       </nav>
+      
     </aside>
 
     <main class="dashboard-main">
@@ -36,30 +38,7 @@
         <form action="#" method="get" style="display: flex; flex-direction: column; gap: 15px; max-width: 600px;">
           <input type="text" name="search" placeholder="Search by model, type, etc." required style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;" />
 
-          <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-            <select name="brand" style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-              <option value="">Brand</option>
-              <option value="Hyundai">Hyundai</option>
-              <option value="Mercedes">Mercedes</option>
-              <option value="Lamborghini">Lamborghini</option>
-              <option value="Koenigsegg">Koenigsegg</option>
-            </select>
-
-            <select name="fuel" style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-              <option value="">Fuel Type</option>
-              <option value="Petrol">Petrol</option>
-              <option value="Diesel">Diesel</option>
-              <option value="Electric">Electric</option>
-            </select>
-
-            <select name="price" style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-              <option value="">Price Range</option>
-              <option value="0-500000">Below ₹5 Lakhs</option>
-              <option value="500000-1000000">₹5-10 Lakhs</option>
-              <option value="1000000-5000000">₹10-50 Lakhs</option>
-              <option value="5000000+">₹50 Lakhs+</option>
-            </select>
-          </div>
+          
 
           <button type="submit" style="padding: 10px 15px; background-color: #0056cc; color: white; border: none; border-radius: 5px; cursor: pointer;">Search</button>
         </form>
