@@ -68,12 +68,21 @@ def login():
 
 
 
+def validate_admin(username, password):
+    with driver.session() as session:
+        result = session.run(
+            "MATCH (a:Admin {username: $username, password: $password}) RETURN a",
+            username=username,
+            password=password
+        )
+        return result.single() is not None
+
 @app.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
         uname = request.form['username']
         pwd = request.form['password']
-        if uname in admins and admins[uname] == pwd:
+        if validate_admin(uname, pwd):
             session['admin'] = uname
             return redirect(url_for('admin_dashboard'))
         else:
@@ -83,9 +92,8 @@ def admin_login():
 @app.route('/admin_dashboard')
 def admin_dashboard():
     if 'admin' in session:
-        return f"Welcome, {session['admin']}! (Admin Dashboard)"
+        return render_template('admin.html', admin=session['admin'])
     return redirect(url_for('admin_login'))
-
 
 @app.route('/logout')
 def logout():
@@ -183,6 +191,40 @@ def admin():
         flash("Unauthorized access.", "error")
         return redirect(url_for('home'))
     return render_template('admin.html')
+@app.route('/add_car', methods=['POST'])
+def add_car():
+    if 'admin' not in session:
+        return redirect(url_for('admin_login'))
+
+    make = request.form['make']
+    model = request.form['model']
+    price = float(request.form['price'])
+    year = int(request.form['year'])
+    kilometer = int(request.form['kilometer'])
+    fuel_type = request.form['fuel_type']
+    transmission = request.form['transmission']
+    location = request.form['location']
+    engine = request.form['engine']
+
+    with driver.session() as session_db:
+        session_db.run("""
+            CREATE (:Car {
+                make: $make,
+                model: $model,
+                price: $price,
+                year: $year,
+                kilometer: $kilometer,
+                fuel_type: $fuel_type,
+                transmission: $transmission,
+                location: $location,
+                engine: $engine
+            })
+        """, make=make, model=model, price=price, year=year,
+             kilometer=kilometer, fuel_type=fuel_type, transmission=transmission,
+             location=location, engine=engine)
+
+    flash('Car added successfully!')
+    return redirect(url_for('admin_dashboard'))
 
 
 if __name__ == '__main__':

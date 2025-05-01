@@ -34,20 +34,36 @@
 
     <section class="admin-form">
       <form action="{{ url_for('add_car') }}" method="POST">
-        <label for="name">Car Name:</label>
-        <input type="text" name="name" id="name" required>
-
-        <label for="brand">Brand:</label>
-        <input type="text" name="brand" id="brand" required>
-
-        <label for="type">Type:</label>
-        <input type="text" name="type" id="type" required>
-
-        <label for="image_url">Image URL:</label>
-        <input type="url" name="image_url" id="image_url" required>
-
+        <label for="make">Make:</label>
+        <input type="text" name="make" id="make" required>
+      
+        <label for="model">Model:</label>
+        <input type="text" name="model" id="model" required>
+      
+        <label for="price">Price:</label>
+        <input type="number" name="price" id="price" required>
+      
+        <label for="year">Year:</label>
+        <input type="number" name="year" id="year" required>
+      
+        <label for="kilometer">Kilometer Driven:</label>
+        <input type="number" name="kilometer" id="kilometer" required>
+      
+        <label for="fuel_type">Fuel Type:</label>
+        <input type="text" name="fuel_type" id="fuel_type" required>
+      
+        <label for="transmission">Transmission:</label>
+        <input type="text" name="transmission" id="transmission" required>
+      
+        <label for="location">Location:</label>
+        <input type="text" name="location" id="location" required>
+      
+        <label for="engine">Engine(cc):</label>
+        <input type="text" name="engine" id="engine" required>
+      
         <button type="submit">Add Car</button>
       </form>
+      
     </section>
   </main>
 </div>
