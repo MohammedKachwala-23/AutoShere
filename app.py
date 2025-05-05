@@ -7,7 +7,7 @@ app.secret_key = "super_secret_key"  # Use env vars in production
 
 URI = "bolt://localhost:7687"
 USERNAME = "neo4j"
-PASSWORD = "fuuckyouu"
+PASSWORD = "hello101"
 
 driver = GraphDatabase.driver(URI, auth=(USERNAME, PASSWORD))
 
@@ -184,13 +184,7 @@ def home():
     return render_template('home.html')
 
 
-# === Admin-only route ===
-@app.route('/admin')
-def admin():
-    if not session.get('is_admin'):
-        flash("Unauthorized access.", "error")
-        return redirect(url_for('home'))
-    return render_template('admin.html')
+
 @app.route('/add_car', methods=['POST'])
 def add_car():
     if 'admin' not in session:
@@ -225,6 +219,18 @@ def add_car():
 
     flash('Car added successfully!')
     return redirect(url_for('admin_dashboard'))
+
+@app.route('/inventory')
+def view_inventory():
+    if 'admin' not in session:
+        return redirect(url_for('admin_login'))
+
+    with driver.session() as session_db:
+        result = session_db.run("MATCH (c:Car) RETURN c ORDER BY c.name")
+        cars = [record["c"] for record in result]
+
+    return render_template('inventory.html', cars=cars)
+
 
 
 if __name__ == '__main__':

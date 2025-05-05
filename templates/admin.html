@@ -17,10 +17,8 @@
         <h2>AUTOSPHERE</h2>
       </div>
       <nav>
-        <a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
-        <a href="{{ url_for('search') }}"><i class="fa-solid fa-magnifying-glass"></i> Search</a>
-        <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a>
-        <a href="{{ url_for('admin') }}" class="active"><i class="fas fa-cogs"></i> Admin</a>
+        <a href="{{ url_for('admin_dashboard') }}" class="active"><i class="fas fa-cogs"></i> Admin</a>
+        <a href="{{ url_for('view_inventory') }}"><i class="fas fa-car"></i> View Inventory</a>
         <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
       </nav>
     </div>

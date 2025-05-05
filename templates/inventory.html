@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Car Inventory | Autosphere</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+  <div class="dashboard-container">
+  
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div>
+        <div class="logo">
+          <img src="{{ url_for('static', filename='css/logo.png') }}" alt="Autosphere Logo" />
+          <h2>AUTOSPHERE</h2>
+        </div>
+        <nav>
+          <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-cogs"></i> Admin</a>
+          <a href="{{ url_for('view_inventory') }}" class="active"><i class="fas fa-car"></i> View Inventory</a>
+          <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+      <header>
+        <h1>Inventory</h1>
+        <p>All available cars in the system.</p>
+      </header>
+
+      <section class="inventory-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Make</th>
+              <th>Model</th>
+              <th>Price</th>
+              <th>Year</th>
+              <th>Kilometer</th>
+              <th>Fuel Type</th>
+              <th>Transmission</th>
+              <th>Location</th>
+              <th>Engine</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for car in cars %}
+            <tr>
+              <td>{{ car.make }}</td>
+              <td>{{ car.model }}</td>
+              <td>{{ car.price }}</td>
+              <td>{{ car.year }}</td>
+              <td>{{ car.kilometer }}</td>
+              <td>{{ car.fuel_type }}</td>
+              <td>{{ car.transmission }}</td>
+              <td>{{ car.location }}</td>
+              <td>{{ car.engine }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+  </div>
+</body>
+</html>                   
