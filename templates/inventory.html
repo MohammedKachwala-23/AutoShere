@@ -1,37 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Car Inventory | Autosphere</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <meta charset="UTF-8">
+  <title>View Inventory | Autosphere</title>
+  <link rel="stylesheet" href="static/css/inventory.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
-  <div class="dashboard-container">
-  
-    <!-- Sidebar -->
+
+  <div class="container">
+
     <aside class="sidebar">
-      <div>
-        <div class="logo">
-          <img src="{{ url_for('static', filename='css/logo.png') }}" alt="Autosphere Logo" />
-          <h2>AUTOSPHERE</h2>
-        </div>
-        <nav>
-          <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-cogs"></i> Admin</a>
-          <a href="{{ url_for('view_inventory') }}" class="active"><i class="fas fa-car"></i> View Inventory</a>
-          <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </nav>
+      <div class="logo">
+        <img src="static/css/logo.png" alt="Autosphere Logo">
+        <h1>Autosphere</h1>
       </div>
+      <nav>
+        <a href="{{ url_for('admin_dashboard') }}" ><i class="fas fa-cogs"></i> Admin</a>
+        <a href="{{ url_for('view_inventory') }}"><i class="fas fa-car"></i> View Inventory</a>
+        <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
     </aside>
 
-    <!-- Main Content -->
-    <main class="dashboard-main">
+    <main class="main-content">
       <header>
-        <h1>Inventory</h1>
-        <p>All available cars in the system.</p>
+        <h2>Car Inventory</h2>
+        <p>List of available cars in our system</p>
       </header>
 
-      <section class="inventory-table">
-        <table>
+      <section class="inventory-section">
+        <table class="inventory-table">
           <thead>
             <tr>
               <th>Make</th>
@@ -65,5 +63,6 @@
     </main>
 
   </div>
+
 </body>
-</html>                   
+</html>
