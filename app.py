@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from neo4j import GraphDatabase
+import pandas as pd
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key"  # Use env vars in production
@@ -77,6 +78,15 @@ def validate_admin(username, password):
         )
         return result.single() is not None
 
+
+def calculate_emi(price, down_payment, months):
+    """ Helper function to calculate EMI """
+    principal = price - down_payment
+    if principal <= 0:
+        return 0
+    return principal / months
+
+
 @app.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
@@ -144,13 +154,48 @@ def contact():
 def about():
     return render_template('about.html')
 
-@app.route('/search')
+@app.route('/search', methods=['GET', 'POST'])
 def search():
-    return render_template('search.html')
+    cars = []
 
+    if request.method == 'POST':
+        make = request.form.get('make')
+        model = request.form.get('model')
+        year = request.form.get('year')
+
+        query = "MATCH (c:Car) WHERE 1=1"
+        params = {}
+
+        if make:
+            query += " AND toLower(c.make) CONTAINS toLower($make)"
+            params['make'] = make
+        if model:
+            query += " AND toLower(c.model) CONTAINS toLower($model)"
+            params['model'] = model
+        if year:
+            query += " AND c.year = $year"
+            params['year'] = int(year)
+
+        query += " RETURN c ORDER BY c.price"
+
+        with driver.session() as session_db:
+            result = session_db.run(query, params)
+            cars = [record["c"] for record in result]
+
+    return render_template('search.html', cars=cars)
+
+
+
+# Assuming `driver` is your Neo4j connection driver
+# Assuming `df` is your DataFrame containing car data with columns like 'Make', 'Model', 'Price', etc.
 
 @app.route('/home', methods=['GET', 'POST'])
 def home():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+
+    recommended_cars = []
+
     if request.method == 'POST':
         income = int(request.form['income'])
         expenditure = int(request.form['expenditure'])
@@ -158,30 +203,61 @@ def home():
         loan_tenure = int(request.form['loan_tenure'])
         buffer = int(request.form['buffer'])
 
-        user_email = session.get('email')
+        user_email = session['email']
+        monthly_savings = income - expenditure
+        available_emi = monthly_savings - buffer
+        loan_months = loan_tenure * 12
+        max_loan = available_emi * loan_months
+        max_price = max_loan + down_payment
 
-        if user_email:
-            with driver.session() as session_db:
-                session_db.run("""
-                    MERGE (p:Person {email: $email})
-                    SET p.income = $income,
-                        p.expenditure = $expenditure,
-                        p.down_payment = $down_payment,
-                        p.loan_tenure = $loan_tenure,
-                        p.buffer = $buffer
-                """,
-                email=user_email,
-                income=income,
-                expenditure=expenditure,
-                down_payment=down_payment,
-                loan_tenure=loan_tenure,
-                buffer=buffer)
+        # Step 1: Query all cars from Neo4j database
+        with driver.session() as session_db:
+            result = session_db.run("""
+                MATCH (c:Car)
+                RETURN c.Make AS Make, c.Model AS Model, c.Price AS Price, c.Year AS Year,
+                       c.Fuel_Type AS Fuel_Type, c.Transmission AS Transmission, c.Owner AS Owner
+                ORDER BY c.Price ASC
+            """)
 
-            return redirect('/home')
-        else:
-            return "User not logged in", 401
+            # Step 2: Process the results and calculate EMI and comfort score for each car
+            for record in result:
+                car_data = record.data()
+                price = car_data['Price']
+                
+                # Check if price is None or invalid
+                if price is None or price <= 0:
+                    continue  # Skip this car if the price is invalid
 
-    return render_template('home.html')
+                emi = calculate_emi(price, down_payment, loan_months)
+
+                if emi <= available_emi:
+                    # Calculate comfort score (higher is better)
+                    comfort_score = ((max_price - price) / price) if price <= max_price else 0
+                    car_data['estimated_emi'] = round(emi, 2)
+                    car_data['comfort_score'] = round(comfort_score, 2)
+
+                    # Add to the recommended cars list
+                    recommended_cars.append(car_data)
+
+        # Step 3: Sort recommended cars by comfort score (higher score first)
+        recommended_cars.sort(key=lambda x: x['comfort_score'], reverse=True)
+
+        # Optional: Store user's latest financial preferences in the database
+        with driver.session() as session_db:
+            session_db.run("""
+                MERGE (p:Person {email: $email})
+                SET p.income = $income,
+                    p.expenditure = $expenditure,
+                    p.down_payment = $down_payment,
+                    p.loan_tenure = $loan_tenure,
+                    p.buffer = $buffer
+            """, email=user_email, income=income, expenditure=expenditure,
+                 down_payment=down_payment, loan_tenure=loan_tenure, buffer=buffer)
+
+        # Return the recommended cars to the template
+        return render_template('home.html', cars=recommended_cars)
+
+    return render_template('home.html', cars=recommended_cars)
 
 
 
@@ -230,6 +306,8 @@ def view_inventory():
         cars = [record["c"] for record in result]
 
     return render_template('inventory.html', cars=cars)
+
+
 
 
 
