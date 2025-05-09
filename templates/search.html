@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Search | Autosphere</title>
   <link rel="stylesheet" href="static/css/home.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
+
 <body class="dashboard-body">
 
   <div class="dashboard-container">
@@ -19,7 +21,7 @@
       <nav>
         <a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
         <a href="{{ url_for('search') }}"><i class="fa-solid fa-magnifying-glass"></i> Search</a>
-        <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a> 
+        <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a>
         <a href="{{ url_for('contact') }}"><i class="fas fa-phone"></i> Contact Us</a>
         <a href="{{ url_for('about') }}"><i class="fa-solid fa-star" style="color: #ffffff;"></i>Why Autosphere</a>
         <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -33,37 +35,44 @@
       </header>
 
       <section class="card">
-        <form action="{{ url_for('search') }}" method="post" style="display: flex; flex-direction: column; gap: 15px; max-width: 600px;">
-          <input type="text" name="make" placeholder="Enter make (e.g. Toyota)" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;" />
-          <input type="text" name="model" placeholder="Enter model (e.g. Corolla)" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;" />
-          <input type="number" name="year" placeholder="Enter year (e.g. 2020)" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;" />
-          
-          <button type="submit" style="padding: 10px 15px; background-color: #0056cc; color: white; border: none; border-radius: 5px; cursor: pointer;">Search</button>
+        <form action="{{ url_for('search') }}" method="post"
+          style="display: flex; flex-direction: column; gap: 15px; max-width: 600px;">
+          <input type="text" name="make" placeholder="Enter make (e.g. Toyota)"
+            style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;" />
+          <input type="text" name="model" placeholder="Enter model (e.g. Corolla)"
+            style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;" />
+          <input type="number" name="year" placeholder="Enter year (e.g. 2020)"
+            style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;" />
+
+          <button type="submit"
+            style="padding: 10px 15px; background-color: #0056cc; color: white; border: none; border-radius: 5px; cursor: pointer;">Search</button>
         </form>
       </section>
 
       <section class="card" style="margin-top: 30px;">
         <h2>Search Results</h2>
-        
+
         {% if cars %}
-          <ul style="list-style: none; padding: 0;">
-            {% for car in cars %}
-              <li style="border-bottom: 1px solid #ccc; padding: 10px 0;">
-                <strong>{{ car['make'] }} {{ car['model'] }}</strong> <br/>
-                ₹{{ car['price'] }} | Year: {{ car['year'] }} | Fuel: {{ car['fuel_type'] }} | Transmission: {{ car['transmission'] }} | Engine: {{ car['engine'] }}
-              </li>
-            {% endfor %}
-          </ul>
+        <ul style="list-style: none; padding: 0;">
+          {% for car in cars %}
+          <li style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <strong>{{ car['make'] }} {{ car['model'] }}</strong> <br />
+            ₹{{ car['price'] }} | Year: {{ car['year'] }} | Fuel: {{ car['fuel_type'] }} | Transmission: {{
+            car['transmission'] }} | Engine: {{ car['engine'] }}
+          </li>
+          {% endfor %}
+        </ul>
         {% elif request.method == 'POST' %}
-          <p>No matching cars found.</p>
+        <p>No matching cars found.</p>
         {% else %}
-          <p>No results yet. Please search to see matching cars.</p>
+        <p>No results yet. Please search to see matching cars.</p>
         {% endif %}
-        
+
       </section>
     </main>
 
   </div>
 
 </body>
+
 </html>

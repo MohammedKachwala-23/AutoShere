@@ -12,7 +12,7 @@ body.about-body, html {
   overflow-x: hidden;
 }
 
-/* Sidebar */
+/* Sidebar Styles */
 .sidebar {
   width: 260px;
   background-color: #232323;
@@ -20,8 +20,6 @@ body.about-body, html {
   padding: 30px 20px;
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
-  min-height: 100vh;
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.7);
   transition: all 0.3s ease;
 }
@@ -44,6 +42,10 @@ body.about-body, html {
   font-weight: 600;
 }
 
+.sidebar nav {
+  margin-top: 20px;
+}
+
 .sidebar nav a {
   color: #f0f0f0;
   text-decoration: none;
@@ -61,6 +63,11 @@ body.about-body, html {
   background: #00e5ff;
   color: #000;
   transform: translateX(5px);
+}
+
+.sidebar nav a i {
+  width: 20px;
+  text-align: center;
 }
 
 /* Main content area */
@@ -121,7 +128,13 @@ body.about-body, html {
   flex-direction: column;
   gap: 10px;
   transition: transform 0.3s, box-shadow 0.3s;
+  
+  /* New lines to limit width and center the card */
+  max-width: 700px;
+  margin: 0 auto;
+  width: 100%;
 }
+
 
 .about-box:hover {
   transform: translateY(-8px);

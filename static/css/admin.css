@@ -8,7 +8,7 @@
 html, body {
   height: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #0f0f0f; /* Deep charcoal */
+  background-color: #0f0f0f;
   color: #f0f0f0;
   overflow-x: hidden;
 }
@@ -20,88 +20,79 @@ html, body {
 
 /* Sidebar */
 .sidebar {
-  width: 260px;
-  background-color: #232323;
-  color: white;
-  padding: 30px 20px;
+  width: 250px;
+  background-color: #0a0a0a;
+  color: #00e5ff;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
-  min-height: 100vh;
-  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.7);
-  transition: all 0.3s ease;
+  box-shadow: 4px 0 10px rgba(0, 229, 255, 0.1);
 }
 
 .logo {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
 .logo img {
-  max-width: 55px;
-  margin-bottom: 10px;
+  max-width: 70px;
   display: block;
-  filter: brightness(1.3);
+  margin: 0 auto 10px;
+  filter: drop-shadow(0 0 5px #00e5ff);
 }
 
 .logo h2 {
-  font-size: 1.5rem;
+  font-size: 20px;
   color: #00e5ff;
-  font-weight: 600;
-  letter-spacing: 1px;
 }
 
 .sidebar nav a {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  margin-bottom: 10px;
+  padding: 10px;
   color: #f0f0f0;
   text-decoration: none;
   border-radius: 6px;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
+  transition: background 0.3s, color 0.3s;
 }
 
 .sidebar nav a:hover,
 .sidebar nav a.active {
-  background-color: #00e5ff;
-  color: #000;
-  transform: translateX(5px);
+  background-color: #003d66;
+  color: #00e5ff;
 }
 
 .sidebar i {
   margin-right: 10px;
+  color: #00e5ff;
 }
 
 /* Main content */
 .dashboard-main {
   flex-grow: 1;
-  padding: 50px;
-  background-color: #141414;
-  color: #f0f0f0;
+  padding: 40px;
+  background-color: #121212;
   overflow-y: auto;
 }
 
 /* Header */
 header h1 {
-  font-size: 2rem;
+  font-size: 28px;
   color: #00e5ff;
   margin-bottom: 10px;
 }
 
 header p {
-  color: #cccccc;
+  color: #bbbbbb;
   margin-bottom: 30px;
 }
 
 /* Form styles */
 .admin-form form {
-  background-color: #1f1f1f;
+  background-color: #1e1e1e;
   padding: 30px;
-  border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(0, 229, 255, 0.25); /* Neon glow */
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
   max-width: 600px;
   margin: auto;
   display: flex;
@@ -119,7 +110,7 @@ header p {
   font-size: 16px;
   background-color: #2a2a2a;
   color: #f0f0f0;
-  border: 1px solid #444;
+  border: 1px solid #333;
   border-radius: 6px;
 }
 

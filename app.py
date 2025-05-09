@@ -307,7 +307,17 @@ def view_inventory():
 
     return render_template('inventory.html', cars=cars)
 
+@app.route('/delete_car', methods=['GET', 'POST'])
+def delete_car():
+    if request.method == 'POST':
+        car_id = request.form['car_id']  # Get the car ID from the form
+        global cars
+        # Remove the car from the list (or database)
+        cars = [car for car in cars if car['id'] != int(car_id)]
+        return redirect(url_for('admin_dashboard'))  # Redirect to the dashboard after deletion
 
+    # Render the delete page, passing the list of cars
+    return render_template('delete_car.html', cars=cars)
 
 
 
