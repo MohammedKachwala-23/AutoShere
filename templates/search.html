@@ -23,7 +23,7 @@
         <a href="{{ url_for('search') }}"><i class="fa-solid fa-magnifying-glass"></i> Search</a>
         <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a>
         <a href="{{ url_for('contact') }}"><i class="fas fa-phone"></i> Contact Us</a>
-        <a href="{{ url_for('about') }}"><i class="fa-solid fa-star" style="color: #ffffff;"></i>Why Autosphere</a>
+        <a href="{{ url_for('about') }}"><i class="fa-solid fa-star"></i>Why Autosphere</a>
         <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
       </nav>
     </aside>
@@ -37,11 +37,11 @@
       <section class="card">
         <form action="{{ url_for('search') }}" method="post"
           style="display: flex; flex-direction: column; gap: 15px; max-width: 600px;">
-          <input type="text" name="make" placeholder="Enter make (e.g. Toyota)"
+          <input type="text" name="make" placeholder="Enter make (e.g. BMW)"
             style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;" />
-          <input type="text" name="model" placeholder="Enter model (e.g. Corolla)"
+          <input type="text" name="model" placeholder="Enter model (e.g. 5-Series)"
             style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;" />
-          <input type="number" name="year" placeholder="Enter year (e.g. 2020)"
+          <input type="number" name="year" placeholder="Enter year (e.g. 2015)"
             style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;" />
 
           <button type="submit"

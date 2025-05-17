@@ -33,17 +33,17 @@
 
     <section class="admin-form">
       <form action="{{ url_for('delete_car') }}" method="POST">
-        <label for="car_id">Select Car to Delete:</label>
-        <select name="car_id" id="car_id" required>
-          {% for car in cars %}
-            <option value="{{ car['id'] }}">{{ car['make'] }} {{ car['model'] }} ({{ car['year'] }})</option>
-          {% endfor %}
-        </select>
+  <label for="car_id">Select Car to Delete:</label>
+  <select name="car_id" id="car_id" required>
+    {% for car in cars %}
+      <option value="{{ car['id'] }}">{{ car['make'] }} {{ car['model'] }} ({{ car['year'] }})</option>
+    {% endfor %}
+  </select>
 
-        <button type="submit">Delete Car</button>
-      </form>
+  <button type="submit">Delete Car</button>
+</form>
 
-      <a href="{{ url_for('admin_dashboard') }}">Back to Admin Dashboard</a>
+
     </section>
   </main>
 </div>

@@ -117,9 +117,6 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/recommendations')
-def recommendations():
-    return render_template('recommendations.html')
 
 @app.route('/profile')
 def profile():
@@ -154,40 +151,46 @@ def contact():
 def about():
     return render_template('about.html')
 
-@app.route('/search', methods=['GET', 'POST'])
+@app.route("/search", methods=["GET", "POST"])
 def search():
-    cars = []
+    if request.method == "POST":
+        make = request.form.get("make", "").strip()
+        model = request.form.get("model", "").strip()
+        year = request.form.get("year", "").strip()
 
-    if request.method == 'POST':
-        make = request.form.get('make')
-        model = request.form.get('model')
-        year = request.form.get('year')
-
-        query = "MATCH (c:Car) WHERE 1=1"
+        # Build dynamic Cypher query
+        query = "MATCH (Car:Car) WHERE 1=1"
         params = {}
 
         if make:
-            query += " AND toLower(c.make) CONTAINS toLower($make)"
-            params['make'] = make
+            query += " AND toLower(Car.make) CONTAINS toLower($make)"
+            params["make"] = make
+
         if model:
-            query += " AND toLower(c.model) CONTAINS toLower($model)"
-            params['model'] = model
+            query += " AND toLower(Car.model) CONTAINS toLower($model)"
+            params["model"] = model
+
         if year:
-            query += " AND c.year = $year"
-            params['year'] = int(year)
+            try:
+                params["year"] = int(year)
+                query += " AND Car.year = $year"
+            except ValueError:
+                flash("Invalid year format. Please enter a number.", "error")
+                return render_template("search.html", cars=[])
 
-        query += " RETURN c ORDER BY c.price"
+        query += " RETURN Car"
 
-        with driver.session() as session_db:
-            result = session_db.run(query, params)
-            cars = [record["c"] for record in result]
+        # Run query and format results
+        with driver.session() as session:
+            result = session.run(query, params)
+            cars = [dict(record["Car"].items()) for record in result]
 
-    return render_template('search.html', cars=cars)
+        return render_template("search.html", cars=cars)
+
+    # GET request: show empty search form
+    return render_template("search.html", cars=[])
 
 
-
-# Assuming `driver` is your Neo4j connection driver
-# Assuming `df` is your DataFrame containing car data with columns like 'Make', 'Model', 'Price', etc.
 
 @app.route('/home', methods=['GET', 'POST'])
 def home():
@@ -258,7 +261,7 @@ def home():
         return render_template('home.html', cars=recommended_cars)
 
     return render_template('home.html', cars=recommended_cars)
-
+    
 
 
 @app.route('/add_car', methods=['POST'])
@@ -309,16 +312,35 @@ def view_inventory():
 
 @app.route('/delete_car', methods=['GET', 'POST'])
 def delete_car():
+    if 'admin' not in session:
+        return redirect(url_for('admin_login'))
+
     if request.method == 'POST':
-        car_id = request.form['car_id']  # Get the car ID from the form
-        global cars
-        # Remove the car from the list (or database)
-        cars = [car for car in cars if car['id'] != int(car_id)]
-        return redirect(url_for('admin_dashboard'))  # Redirect to the dashboard after deletion
+        car_id = int(request.form['car_id'])  # Getting car_id from the form
+        with driver.session() as session_db:
+            session_db.run("""
+                MATCH (c:Car)
+                WHERE id(c) = $car_id
+                DETACH DELETE c
+            """, car_id=car_id)
 
-    # Render the delete page, passing the list of cars
+        flash("Car deleted successfully!")
+        return redirect(url_for('admin_dashboard'))
+
+    # For GET request: fetch car details and their Neo4j IDs
+    with driver.session() as session_db:
+        result = session_db.run("MATCH (c:Car) RETURN c")
+        cars = []
+        for record in result:
+            car_node = record["c"]
+            cars.append({
+                "id": car_node.id,
+                "make": car_node.get("make", ""),
+                "model": car_node.get("model", ""),
+                "year": car_node.get("year", "")
+            })
+
     return render_template('delete_car.html', cars=cars)
-
 
 
 if __name__ == '__main__':
