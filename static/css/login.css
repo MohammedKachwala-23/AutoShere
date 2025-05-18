@@ -46,6 +46,7 @@
   border-radius: 6px;
   outline: none;
   transition: border-color 0.3s;
+  width: 97%;
 }
 
 .auth-container input:focus {
@@ -78,4 +79,29 @@
 
 .auth-container a:hover {
   color: #ffffff;
+}
+
+/* Password wrapper for eye icon */
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 1px; 
+}
+
+/* Eye icon inside password field */
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #aaa;
+  font-size: 1rem;
+}
+
+.toggle-password:hover {
+  color: #00e5ff;
 }

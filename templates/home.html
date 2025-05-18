@@ -8,8 +8,9 @@
     <p>Your personalized car dashboard</p>
   </header>
 
-  <div class="dashboard-cards">
-    <div class="card">
+  <div class="dashboard-grid">
+    <!-- Financial Form Panel -->
+    <div class="panel">
       <h2>Enter Your Financial Details</h2>
       <form action="{{ url_for('home') }}" method="post" style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
         <label for="income">Monthly Income:</label>
@@ -32,5 +33,27 @@
         </button>
       </form>
     </div>
+
+    <!-- Car Recommendations Panel -->
+    {% if cars %}
+    <div class="panel">
+      <h2>Recommended Cars for You</h2>
+      <ul style="list-style: none; padding: 0;">
+        {% for car in cars %}
+          <li style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;">
+            <strong>{{ car.make }} {{ car.model }}</strong><br />
+            Price: ₹{{ "{:,}".format(car.price) }}<br />
+            EMI: ₹{{ "{:,}".format(car.estimated_emi) }}/month<br />
+            Year: {{ car.year }}<br />
+            Fuel: {{ car.fuel_type }} | Transmission: {{ car.transmission }}<br />
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% elif request.method == 'POST' %}
+      <div class="panel">
+        <p style="color: red;">No cars matched your criteria. Please try adjusting your inputs.</p>
+      </div>
+    {% endif %}
   </div>
 {% endblock %}

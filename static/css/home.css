@@ -110,6 +110,7 @@ html, body {
   display: flex;
   gap: 25px;
   margin-bottom: 45px;
+  flex-wrap: wrap;
 }
 
 .dashboard-cards .card {
@@ -140,6 +141,14 @@ html, body {
   font-weight: bold;
 }
 
+/* Remove this old form-card style */
+.dashboard-cards .form-card {
+  /* This was causing the extra space */
+  /* max-width: 400px;
+  width: 100%;
+  margin: 0 auto; */
+}
+
 /* Content Section */
 .dashboard-content h2 {
   margin-bottom: 20px;
@@ -164,4 +173,33 @@ html, body {
   background: #333;
   border-color: #00e5ff;
   color: #fff;
+}
+
+/* New layout for form + recommendations */
+.dashboard-split {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 500px;
+  background-color: #1f1f1f;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 229, 255, 0.25);
+  flex-shrink: 0;
+}
+
+.recommendation-card {
+  flex: 1;
+  background-color: #1f1f1f;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 229, 255, 0.25);
+  min-width: 300px;
 }

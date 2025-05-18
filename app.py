@@ -200,68 +200,75 @@ def home():
     recommended_cars = []
 
     if request.method == 'POST':
-        income = int(request.form['income'])
-        expenditure = int(request.form['expenditure'])
-        down_payment = int(request.form['down_payment'])
-        loan_tenure = int(request.form['loan_tenure'])
-        buffer = int(request.form['buffer'])
+        try:
+            # Extract form values
+            income = int(request.form['income'])
+            expenditure = int(request.form['expenditure'])
+            down_payment = int(request.form['down_payment'])
+            loan_tenure = int(request.form['loan_tenure'])  # in years
+            buffer = int(request.form['buffer'])
 
-        user_email = session['email']
-        monthly_savings = income - expenditure
-        available_emi = monthly_savings - buffer
-        loan_months = loan_tenure * 12
-        max_loan = available_emi * loan_months
-        max_price = max_loan + down_payment
+            # Compute financial constraints
+            monthly_savings = income - expenditure
+            available_emi = monthly_savings - buffer
+            loan_months = loan_tenure * 12
+            max_loan = available_emi * loan_months
+            max_price = max_loan + down_payment
 
-        # Step 1: Query all cars from Neo4j database
-        with driver.session() as session_db:
-            result = session_db.run("""
-                MATCH (c:Car)
-                RETURN c.Make AS Make, c.Model AS Model, c.Price AS Price, c.Year AS Year,
-                       c.Fuel_Type AS Fuel_Type, c.Transmission AS Transmission, c.Owner AS Owner
-                ORDER BY c.Price ASC
-            """)
+            if available_emi <= 0 or max_price <= 0:
+                flash("Insufficient budget or incorrect inputs.", "error")
+                return render_template('home.html', cars=[])
 
-            # Step 2: Process the results and calculate EMI and comfort score for each car
-            for record in result:
-                car_data = record.data()
-                price = car_data['Price']
-                
-                # Check if price is None or invalid
-                if price is None or price <= 0:
-                    continue  # Skip this car if the price is invalid
+            # Query database and calculate recommendations
+            with driver.session() as session_db:
+                result = session_db.run("""
+                    MATCH (c:Car)
+                    RETURN c.make AS make, c.model AS model, c.price AS price, 
+                           c.year AS year, c.fuel_type AS fuel_type, 
+                           c.transmission AS transmission, c.owner AS owner
+                    ORDER BY c.price ASC
+                """)
 
-                emi = calculate_emi(price, down_payment, loan_months)
+                for record in result:
+                    price = record["price"]
+                    if price is None or price <= 0:
+                        continue
 
-                if emi <= available_emi:
-                    # Calculate comfort score (higher is better)
-                    comfort_score = ((max_price - price) / price) if price <= max_price else 0
-                    car_data['estimated_emi'] = round(emi, 2)
-                    car_data['comfort_score'] = round(comfort_score, 2)
+                    # Calculate EMI
+                    emi = calculate_emi(price, down_payment, loan_months)
+                    if emi <= available_emi:
+                        comfort_score = (max_price - price) / price
+                        recommended_cars.append({
+                            "make": record["make"],
+                            "model": record["model"],
+                            "price": price,
+                            "year": record["year"],
+                            "fuel_type": record["fuel_type"],
+                            "transmission": record["transmission"],
+                            "owner": record.get("owner", "Unknown"),
+                            "estimated_emi": round(emi, 2),
+                            "comfort_score": round(comfort_score, 2)
+                        })
 
-                    # Add to the recommended cars list
-                    recommended_cars.append(car_data)
+                # Sort recommendations
+                recommended_cars.sort(key=lambda x: x["comfort_score"], reverse=True)
 
-        # Step 3: Sort recommended cars by comfort score (higher score first)
-        recommended_cars.sort(key=lambda x: x['comfort_score'], reverse=True)
+                # Save user preferences in database
+                session_db.run("""
+                    MERGE (p:Person {email: $email})
+                    SET p.income = $income,
+                        p.expenditure = $expenditure,
+                        p.down_payment = $down_payment,
+                        p.loan_tenure = $loan_tenure,
+                        p.buffer = $buffer
+                """, email=session['email'], income=income, expenditure=expenditure,
+                     down_payment=down_payment, loan_tenure=loan_tenure, buffer=buffer)
 
-        # Optional: Store user's latest financial preferences in the database
-        with driver.session() as session_db:
-            session_db.run("""
-                MERGE (p:Person {email: $email})
-                SET p.income = $income,
-                    p.expenditure = $expenditure,
-                    p.down_payment = $down_payment,
-                    p.loan_tenure = $loan_tenure,
-                    p.buffer = $buffer
-            """, email=user_email, income=income, expenditure=expenditure,
-                 down_payment=down_payment, loan_tenure=loan_tenure, buffer=buffer)
-
-        # Return the recommended cars to the template
-        return render_template('home.html', cars=recommended_cars)
+        except ValueError:
+            flash("Please enter valid numeric inputs.", "error")
 
     return render_template('home.html', cars=recommended_cars)
-    
+   
 
 
 @app.route('/add_car', methods=['POST'])

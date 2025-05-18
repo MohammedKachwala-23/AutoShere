@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login | Autosphere</title>
   <link rel="stylesheet" href="static/css/login.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  
 </head>
 <body class="auth-body">
   <div class="auth-container">
@@ -22,12 +24,31 @@
 
     <form method="POST" action="{{ url_for('login') }}">
       <input type="email" name="email" placeholder="Email" required />
-      <input type="password" name="password" placeholder="Password" required />
+
+      <div class="password-wrapper">
+        <input type="password" name="password" id="password" placeholder="Password" required />
+        <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+      </div>
+
       <button type="submit">Login</button>
       <a href="{{ url_for('admin_login') }}">Admin Login</a>
       <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a></p>
     </form>
   </div>
+
+  <script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    togglePassword.addEventListener('click', function () {
+      // Toggle password visibility
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+
+      // Toggle icon
+      this.classList.toggle('fa-eye');
+      this.classList.toggle('fa-eye-slash');
+    });
+  </script>
 </body>
 </html>
-
