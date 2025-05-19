@@ -1,4 +1,4 @@
-/* Reset and layout */
+/* Reset and global styles */
 * {
   margin: 0;
   padding: 0;
@@ -11,14 +11,10 @@ html, body {
   background-color: #0f0f0f;
   color: #f0f0f0;
   overflow-x: hidden;
+  line-height: 1.5;
 }
 
-.dashboard-body {
-  background-color: #0f0f0f;
-  color: #f0f0f0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
+/* Dashboard Layout */
 .dashboard-container {
   display: flex;
   min-height: 100vh;
@@ -33,7 +29,6 @@ html, body {
   display: flex;
   flex-direction: column;
   box-shadow: 4px 0 10px rgba(0, 229, 255, 0.1);
-  transition: all 0.3s ease;
 }
 
 .sidebar .logo {
@@ -50,7 +45,6 @@ html, body {
 
 .sidebar .logo h2 {
   font-size: 20px;
-  color: #00e5ff;
   font-weight: 600;
 }
 
@@ -84,13 +78,12 @@ html, body {
   text-align: center;
 }
 
-/* Main content */
+/* Main Dashboard Content */
 .dashboard-main {
   flex-grow: 1;
   padding: 40px;
   background-color: #121212;
   overflow-y: auto;
-  color: #f0f0f0;
 }
 
 .dashboard-main header h1 {
@@ -105,77 +98,7 @@ html, body {
   margin-bottom: 30px;
 }
 
-/* Cards */
-.dashboard-cards {
-  display: flex;
-  gap: 25px;
-  margin-bottom: 45px;
-  flex-wrap: wrap;
-}
-
-.dashboard-cards .card {
-  flex: 1;
-  background-color: #1f1f1f;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0, 229, 255, 0.25);
-  text-align: center;
-  color: #f0f0f0;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.dashboard-cards .card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 10px 20px rgba(0, 229, 255, 0.4);
-}
-
-.dashboard-cards .card h3 {
-  color: #00e5ff;
-  margin-bottom: 12px;
-  font-weight: 600;
-}
-
-.dashboard-cards .card p {
-  font-size: 1.6rem;
-  color: #00e5ff;
-  font-weight: bold;
-}
-
-/* Remove this old form-card style */
-.dashboard-cards .form-card {
-  /* This was causing the extra space */
-  /* max-width: 400px;
-  width: 100%;
-  margin: 0 auto; */
-}
-
-/* Content Section */
-.dashboard-content h2 {
-  margin-bottom: 20px;
-  color: #00e5ff;
-}
-
-/* Chart Placeholder */
-.chart-placeholder {
-  height: 220px;
-  background: #1a1a1a;
-  border-radius: 12px;
-  border: 2px dashed #444;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #888;
-  font-style: italic;
-  transition: background 0.3s, border-color 0.3s, color 0.3s;
-}
-
-.chart-placeholder:hover {
-  background: #333;
-  border-color: #00e5ff;
-  color: #fff;
-}
-
-/* New layout for form + recommendations */
+/* Form + Recommendations Split View */
 .dashboard-split {
   display: flex;
   gap: 20px;
@@ -185,6 +108,7 @@ html, body {
   margin-bottom: 40px;
 }
 
+/* Financial Form Card */
 .form-card {
   width: 100%;
   max-width: 500px;
@@ -195,11 +119,87 @@ html, body {
   flex-shrink: 0;
 }
 
+.form-card h2 {
+  color: #00e5ff;
+  margin-bottom: 20px;
+}
+
+.form-card label {
+  display: block;
+  margin-bottom: 5px;
+  color: #ccc;
+  font-size: 0.95rem;
+}
+
+.form-card input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  background-color: #2a2a2a;
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.form-card input::placeholder {
+  color: #888;
+}
+
+.submit-btn {
+  padding: 12px;
+  background-color: #00e5ff;
+  color: #121212;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #00bcd4;
+}
+
+/* Recommendations Card */
 .recommendation-card {
   flex: 1;
+  min-width: 300px;
   background-color: #1f1f1f;
   padding: 25px;
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(0, 229, 255, 0.25);
-  min-width: 300px;
+}
+
+.recommendation-card h2 {
+  color: #00e5ff;
+  margin-bottom: 20px;
+}
+
+/* Each Car Item */
+.car-card {
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #262626;
+  box-shadow: 0 4px 12px rgba(0, 229, 255, 0.1);
+  color: #f0f0f0;
+  font-size: 0.95rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.car-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 229, 255, 0.2);
+}
+
+/* Media Queries for Mobile */
+@media (max-width: 768px) {
+  .dashboard-split {
+    flex-direction: column;
+  }
+
+  .form-card,
+  .recommendation-card {
+    width: 100%;
+  }
 }

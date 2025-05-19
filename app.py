@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from werkzeug.security import generate_password_hash, check_password_hash
 from neo4j import GraphDatabase
 import pandas as pd
+import random 
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key"  # Use env vars in production
@@ -191,85 +192,92 @@ def search():
     return render_template("search.html", cars=[])
 
 
-
-@app.route('/home', methods=['GET', 'POST'])
+@app.route("/home", methods=["GET", "POST"])
 def home():
-    if 'email' not in session:
-        return redirect(url_for('login'))
+    if "email" not in session:
+        flash("Please log in to access this page.", "error")
+        return redirect(url_for("login"))
 
-    recommended_cars = []
+    email = session["email"]
+    salary = down_payment = loan_months = 0  # Initialize variables
 
     if request.method == 'POST':
-        try:
-            # Extract form values
-            income = int(request.form['income'])
-            expenditure = int(request.form['expenditure'])
-            down_payment = int(request.form['down_payment'])
-            loan_tenure = int(request.form['loan_tenure'])  # in years
-            buffer = int(request.form['buffer'])
+        # Capture form data
+        salary = float(request.form.get("income", 0))
+        expenditure = float(request.form.get("expenditure", 0))
+        down_payment = float(request.form.get("down_payment", 0))
+        loan_years = int(request.form.get("loan_tenure", 1))
+        loan_months = loan_years * 12  # Convert years to months
 
-            # Compute financial constraints
-            monthly_savings = income - expenditure
-            available_emi = monthly_savings - buffer
-            loan_months = loan_tenure * 12
-            max_loan = available_emi * loan_months
-            max_price = max_loan + down_payment
+    # Fetch user data from the database
+    with driver.session() as db:
+        user_query = """
+            MATCH (u:User {email: $email})
+            RETURN u.salary AS salary, u.down_payment AS down_payment, u.loan_tenure AS loan_tenure
+        """
+        user_result = db.run(user_query, email=email).single()
 
-            if available_emi <= 0 or max_price <= 0:
-                flash("Insufficient budget or incorrect inputs.", "error")
-                return render_template('home.html', cars=[])
+        if not user_result:
+            flash("User data not found.", "error")
+            return redirect(url_for("login"))
 
-            # Query database and calculate recommendations
-            with driver.session() as session_db:
-                result = session_db.run("""
-                    MATCH (c:Car)
-                    RETURN c.make AS make, c.model AS model, c.price AS price, 
-                           c.year AS year, c.fuel_type AS fuel_type, 
-                           c.transmission AS transmission, c.owner AS owner
-                    ORDER BY c.price ASC
-                """)
+        # Safely extract user data if not set by the form
+        salary = salary or float(user_result.get("salary") or 0)
+        down_payment = down_payment or float(user_result.get("down_payment") or 0)
+        loan_months = loan_months or int(user_result.get("loan_tenure") or 1)
 
-                for record in result:
-                    price = record["price"]
-                    if price is None or price <= 0:
-                        continue
+        # EMI affordability and price cap logic
+        available_emi = salary * 0.25  # 25% of salary
+        max_price = down_payment + (available_emi * loan_months)
 
-                    # Calculate EMI
-                    emi = calculate_emi(price, down_payment, loan_months)
-                    if emi <= available_emi:
-                        comfort_score = (max_price - price) / price
-                        recommended_cars.append({
-                            "make": record["make"],
-                            "model": record["model"],
-                            "price": price,
-                            "year": record["year"],
-                            "fuel_type": record["fuel_type"],
-                            "transmission": record["transmission"],
-                            "owner": record.get("owner", "Unknown"),
-                            "estimated_emi": round(emi, 2),
-                            "comfort_score": round(comfort_score, 2)
-                        })
+        car_query = """
+            MATCH (c:Car)
+            WHERE c.price IS NOT NULL
+            RETURN c ORDER BY c.price ASC
+        """
+        result = db.run(car_query)
 
-                # Sort recommendations
-                recommended_cars.sort(key=lambda x: x["comfort_score"], reverse=True)
+        recommended_cars = []
 
-                # Save user preferences in database
-                session_db.run("""
-                    MERGE (p:Person {email: $email})
-                    SET p.income = $income,
-                        p.expenditure = $expenditure,
-                        p.down_payment = $down_payment,
-                        p.loan_tenure = $loan_tenure,
-                        p.buffer = $buffer
-                """, email=session['email'], income=income, expenditure=expenditure,
-                     down_payment=down_payment, loan_tenure=loan_tenure, buffer=buffer)
+        def calculate_emi(price, down_payment, months):
+            principal = price - down_payment
+            if principal <= 0:
+                return 0
+            rate = 0.01  # Monthly interest rate (1%)
+            if months == 0:
+                return principal
+            emi = (principal * rate * (1 + rate) ** months) / ((1 + rate) ** months - 1)
+            return emi
 
-        except ValueError:
-            flash("Please enter valid numeric inputs.", "error")
+        for record in result:
+            car = record["c"]
+            price = car.get("price")
 
-    return render_template('home.html', cars=recommended_cars)
-   
+            if not price or price <= 0 or price > max_price:
+                continue
 
+            emi = calculate_emi(price, down_payment, loan_months)
+
+            if emi <= available_emi:
+                comfort_score = (max_price - price) / price
+                recommended_cars.append({
+                    "make": car.get("make"),
+                    "model": car.get("model"),
+                    "price": price,
+                    "year": car.get("year"),
+                    "fuel_type": car.get("fuel_type"),
+                    "transmission": car.get("transmission"),
+                    "owner": car.get("owner", "Unknown"),
+                    "estimated_emi": round(emi, 2),
+                    "comfort_score": round(comfort_score, 2),
+                    "id": car.element_id
+                })
+
+        # Randomly shuffle and return up to 15 cars
+        random.shuffle(recommended_cars)
+        recommended_cars = recommended_cars[:15]
+
+    return render_template("home.html", cars=recommended_cars)
 
 @app.route('/add_car', methods=['POST'])
 def add_car():
@@ -349,6 +357,175 @@ def delete_car():
 
     return render_template('delete_car.html', cars=cars)
 
+@app.route('/edit_car/<int:car_id>', methods=['GET', 'POST'])
+def edit_car(car_id):
+    if 'admin' not in session:
+        return redirect(url_for('admin_login'))
+
+    with driver.session() as db:
+        if request.method == 'POST':
+            updated_fields = {
+                "make": request.form['make'],
+                "model": request.form['model'],
+                "price": float(request.form['price']),
+                "year": int(request.form['year']),
+                "kilometer": int(request.form['kilometer']),
+                "fuel_type": request.form['fuel_type'],
+                "transmission": request.form['transmission'],
+                "location": request.form['location'],
+                "engine": request.form['engine']
+            }
+
+            db.run("""
+                MATCH (c:Car)
+                WHERE id(c) = $car_id
+                SET c += $fields
+            """, car_id=car_id, fields=updated_fields)
+
+            flash("Car details updated.", "success")
+            return redirect(url_for('inventory'))
+
+        result = db.run("MATCH (c:Car) WHERE id(c) = $car_id RETURN c", car_id=car_id)
+        record = result.single()
+        if not record:
+            flash("Car not found", "error")
+            return redirect(url_for('inventory'))
+
+        car = record["c"]
+        return render_template("edit_car.html", car=dict(car.items()), car_id=car.id)
+
+
+
+
+@app.route('/change_password', methods=['POST'])
+def change_password():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+
+    email = session['email']
+    current_password = request.form['current_password']
+    new_password = request.form['new_password']
+    confirm_password = request.form['confirm_password']
+
+    if new_password != confirm_password:
+        flash("New passwords do not match.", "error")
+        return redirect(url_for('profile'))
+
+    with driver.session() as db:
+        result = db.run("""
+            MATCH (u:User {email: $email})
+            RETURN u.password AS password
+        """, email=email)
+
+        record = result.single()
+
+        if record and check_password_hash(record["password"], current_password):
+            hashed_new_password = generate_password_hash(new_password)
+            db.run("""
+                MATCH (u:User {email: $email})
+                SET u.password = $new_password
+            """, email=email, new_password=hashed_new_password)
+            flash("Password updated successfully.", "success")
+        else:
+            flash("Current password is incorrect.", "error")
+
+    return redirect(url_for('profile'))
+
+@app.route('/update_profile', methods=['POST'])
+def update_profile():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+
+    new_username = request.form['username']
+    new_email = request.form['email']
+    old_email = session['email']
+
+    with driver.session() as db:
+        db.run("""
+            MATCH (u:User {email: $old_email})
+            SET u.username = $new_username, u.email = $new_email
+        """, old_email=old_email, new_username=new_username, new_email=new_email)
+
+    session['email'] = new_email
+    session['user'] = new_username
+    flash("Profile updated successfully", "success")
+    return redirect(url_for('profile'))
+
+@app.template_filter('inr')
+def inr_format(value):
+    try:
+        return f"{int(value):,}"
+    except (ValueError, TypeError):
+        return value
+
+@app.route('/car/<int:car_id>', methods=['GET'])
+def get_car(car_id):
+    with driver.session() as db:
+        result = db.run("MATCH (c:Car) WHERE id(c) = $car_id RETURN c", car_id=car_id)
+        record = result.single()
+        if not record:
+            return {"error": "Car not found"}, 404
+        return dict(record["c"].items())
+    
+@app.route('/save_car/<int:car_id>', methods=['POST'])
+def save_car(car_id):
+    if 'email' not in session:
+        flash("Please log in to save cars.", "error")
+        return redirect(url_for('login'))
+    # …code that creates a relationship or stores the saved car…
+    flash("Car saved!", "success")
+    return redirect(url_for('home'))
+@app.route("/api/recommend", methods=["POST"])
+def recommend_cars():
+    income = float(request.form['income'])
+    expenditure = float(request.form['expenditure'])
+    down_payment = float(request.form['down_payment'])
+    loan_years = int(request.form['loan_tenure'])
+    buffer = float(request.form['buffer'])
+
+    loan_months = loan_years * 12
+    disposable_income = income - expenditure - buffer
+    available_emi = disposable_income * 0.5  # user can spend up to 50% of free income
+
+    max_price = (available_emi * loan_months) + down_payment
+
+    def calculate_emi(price, down_payment, months):
+        principal = price - down_payment
+        if principal <= 0:
+            return 0
+        rate = 0.01  # 1% monthly interest
+        emi = (principal * rate * (1 + rate) ** months) / ((1 + rate) ** months - 1)
+        return emi
+
+    with driver.session() as session:
+        result = session.run("""
+            MATCH (c:Car)
+            WHERE c.price <= $max_price
+            RETURN c ORDER BY c.price ASC
+        """, max_price=max_price)
+
+        cars = []
+        for record in result:
+            car = record["c"]
+            price = car["price"]
+            emi = calculate_emi(price, down_payment, loan_months)
+
+            if emi <= available_emi:
+                comfort_score = (max_price - price) / price
+                cars.append({
+                    "make": car["make"],
+                    "model": car["model"],
+                    "price": price,
+                    "year": car["year"],
+                    "fuel_type": car["fuel_type"],
+                    "transmission": car["transmission"],
+                    "estimated_emi": round(emi),
+                    "comfort_score": round(comfort_score, 2)
+                })
+
+        cars = sorted(cars, key=lambda x: x["comfort_score"], reverse=True)[:10]
+
+    return render_template("home.html", cars=cars)
 
 if __name__ == '__main__':
     app.run(debug=True)

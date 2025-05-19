@@ -8,52 +8,56 @@
     <p>Your personalized car dashboard</p>
   </header>
 
-  <div class="dashboard-grid">
-    <!-- Financial Form Panel -->
-    <div class="panel">
-      <h2>Enter Your Financial Details</h2>
-      <form action="{{ url_for('home') }}" method="post" style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
-        <label for="income">Monthly Income:</label>
-        <input type="number" id="income" name="income" placeholder="e.g., 50000" required />
-
-        <label for="expenditure">Monthly Expenditure:</label>
-        <input type="number" id="expenditure" name="expenditure" placeholder="e.g., 25000" required />
-
-        <label for="down_payment">Down Payment:</label>
-        <input type="number" id="down_payment" name="down_payment" placeholder="e.g., 200000" required />
-
-        <label for="loan_tenure">Loan Tenure (in Years):</label>
-        <input type="number" id="loan_tenure" name="loan_tenure" placeholder="e.g., 3" min="1" required />
-
-        <label for="buffer">Buffer Amount:</label>
-        <input type="number" id="buffer" name="buffer" placeholder="e.g., 5000" required />
-
-        <button type="submit" style="padding: 10px 15px; background-color: #0056cc; color: white; border: none; border-radius: 5px; cursor: pointer;">
-          Submit
-        </button>
+  <div class="dashboard-split">
+    <!-- Financial Form -->
+    <div class="form-card">
+      <h2 style="color: #00e5ff; margin-bottom: 20px;">Financial Details</h2>
+      <form action="{{ url_for('home') }}" method="post" style="display: flex; flex-direction: column; gap: 15px;">
+        <div>
+          <label for="income">Monthly Income:</label>
+          <input type="number" id="income" name="income" placeholder="e.g., 50000" required />
+        </div>
+        <div>
+          <label for="expenditure">Monthly Expenditure:</label>
+          <input type="number" id="expenditure" name="expenditure" placeholder="e.g., 25000" required />
+        </div>
+        <div>
+          <label for="down_payment">Down Payment:</label>
+          <input type="number" id="down_payment" name="down_payment" placeholder="e.g., 200000" required />
+        </div>
+        <div>
+          <label for="loan_tenure">Loan Tenure (Years):</label>
+          <input type="number" id="loan_tenure" name="loan_tenure" placeholder="e.g., 3" min="1" required />
+        </div>
+        <div>
+          <label for="buffer">Buffer Amount:</label>
+          <input type="number" id="buffer" name="buffer" placeholder="e.g., 5000" required />
+        </div>
+        <button type="submit" class="submit-btn">Submit</button>
       </form>
     </div>
 
-    <!-- Car Recommendations Panel -->
+    <!-- Car Recommendations -->
+    <div class="recommendation-card">
+    <h2 style="color: #00e5ff; margin-bottom: 20px;">Recommended Cars</h2>
     {% if cars %}
-    <div class="panel">
-      <h2>Recommended Cars for You</h2>
-      <ul style="list-style: none; padding: 0;">
+      <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 15px;">
         {% for car in cars %}
-          <li style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;">
-            <strong>{{ car.make }} {{ car.model }}</strong><br />
-            Price: ₹{{ "{:,}".format(car.price) }}<br />
-            EMI: ₹{{ "{:,}".format(car.estimated_emi) }}/month<br />
-            Year: {{ car.year }}<br />
-            Fuel: {{ car.fuel_type }} | Transmission: {{ car.transmission }}<br />
+          <li class="car-card" style="border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
+            <strong style="font-size: 1.2em;">{{ car.make }} {{ car.model }}</strong><br />
+            <span>Price: ₹{{ car.price|inr }}</span><br />
+            <span>EMI: ₹{{ car.estimated_emi|inr }}/month</span><br />
+            <span>Comfort Score: {{ car.comfort_score }}</span><br />
+            <span>Year: {{ car.year }}</span><br />
+            <span>{{ car.fuel_type }} | {{ car.transmission }}</span><br />
           </li>
         {% endfor %}
       </ul>
-    </div>
     {% elif request.method == 'POST' %}
-      <div class="panel">
-        <p style="color: red;">No cars matched your criteria. Please try adjusting your inputs.</p>
-      </div>
+      <p style="color: red;">No cars matched your criteria. Try adjusting your inputs.</p>
+    {% else %}
+      <p>Fill in your financial details to get personalized car recommendations.</p>
     {% endif %}
   </div>
+</div>
 {% endblock %}
